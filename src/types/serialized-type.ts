@@ -2,31 +2,31 @@ import { BytesList } from '../serdes/binary-serializer'
 const { bytesToHex, slice } = require('../utils/bytes-utils')
 
 const Comparable = {
-  lt (other) {
+  lt(other) {
     return this.compareTo(other) < 0
   },
-  eq (other) {
+  eq(other) {
     return this.compareTo(other) === 0
   },
-  gt (other) {
+  gt(other) {
     return this.compareTo(other) > 0
   },
-  gte (other) {
+  gte(other) {
     return this.compareTo(other) > -1
   },
-  lte (other) {
+  lte(other) {
     return this.compareTo(other) < 1
-  }
+  },
 }
 
 const SerializedType = {
-  toBytesSink (sink) {
+  toBytesSink(sink) {
     sink.put(this._bytes)
   },
-  toHex () {
+  toHex() {
     return bytesToHex(this.toBytes())
   },
-  toBytes () {
+  toBytes() {
     if (this._bytes) {
       return slice(this._bytes)
     }
@@ -34,17 +34,17 @@ const SerializedType = {
     this.toBytesSink(bl)
     return bl.toBytes()
   },
-  toJSON () {
+  toJSON() {
     return this.toHex()
   },
-  toString () {
+  toString() {
     return this.toHex()
-  }
+  },
 }
 
-function ensureArrayLikeIs (Type, arrayLike) {
+function ensureArrayLikeIs(Type, arrayLike) {
   return {
-    withChildren (Child) {
+    withChildren(Child) {
       if (arrayLike instanceof Type) {
         return arrayLike
       }
@@ -53,12 +53,8 @@ function ensureArrayLikeIs (Type, arrayLike) {
         obj.push(Child.from(arrayLike[i]))
       }
       return obj
-    }
+    },
   }
 }
 
-export {
-  ensureArrayLikeIs,
-  SerializedType,
-  Comparable
-}
+export { ensureArrayLikeIs, SerializedType, Comparable }

@@ -31,7 +31,7 @@ const coreTypes = {
   UInt16,
   UInt32,
   UInt64,
-  Vector256
+  Vector256,
 }
 
 Object.entries(Field).forEach( ([_,f]) => {

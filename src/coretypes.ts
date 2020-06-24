@@ -7,7 +7,6 @@ const hashes = require('./hashes');
 const quality = require('./quality');
 const {HashPrefix} = require('./hash-prefixes');
 
-
 export {
   hashes,
   binary,
@@ -16,5 +15,5 @@ export {
   quality,
   HashPrefix,
   ShaMap,
-  types
+  types,
 }

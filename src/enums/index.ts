@@ -1,4 +1,4 @@
-const { serializeUIntN } = require('./../utils/bytes-utils')
+import { serializeUIntN } from './../utils/bytes-utils'
 const enums = require('./definitions.json')
 
 const TYPE_WIDTH = 2

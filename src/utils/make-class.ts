@@ -1,17 +1,17 @@
-import _ = require('lodash');
+import _ = require('lodash')
 const inherits = require('inherits')
 
-function forEach (obj, func) {
-  Object.keys(obj || {}).forEach(k => {
+function forEach(obj, func) {
+  Object.keys(obj || {}).forEach((k) => {
     func(obj[k], k)
   })
 }
 
-function ensureArray (val) {
+function ensureArray(val) {
   return Array.isArray(val) ? val : [val]
 }
 
-export function makeClass (klass_, definition_) {
+export function makeClass(klass_, definition_) {
   const definition = definition_ || klass_
   let klass = typeof klass_ === 'function' ? klass_ : null
   if (klass === null) {
@@ -36,10 +36,10 @@ export function makeClass (klass_, definition_) {
     klass = function () {}
   }
   const proto = klass.prototype
-  function addFunc (original, name, wrapper) {
+  function addFunc(original, name, wrapper) {
     proto[name] = wrapper || original
   }
-  (definition.getters || []).forEach(k => {
+  ;(definition.getters || []).forEach((k) => {
     const key = '_' + k
     proto[k] = function () {
       return this[key]
@@ -73,11 +73,13 @@ export function makeClass (klass_, definition_) {
   if (definition.mixins) {
     const mixins = {}
     // Right-most in the list win
-    ensureArray(definition.mixins).reverse().forEach(o => {
-      _.defaults(mixins, o)
-    })
+    ensureArray(definition.mixins)
+      .reverse()
+      .forEach((o) => {
+        _.defaults(mixins, o)
+      })
     _.defaults(proto, mixins)
   }
 
   return klass
-};
+}

@@ -1,12 +1,12 @@
 import { strict as assert } from 'assert'
 
-function signum (a, b) {
+function signum(a, b) {
   return a < b ? -1 : a === b ? 0 : 1
 }
 
 const hexLookup = (function () {
   const res = <any>{}
-  const reverse = res.reverse = new Array(256)
+  const reverse = (res.reverse = new Array(256))
   for (let i = 0; i < 16; i++) {
     const char = i.toString(16).toUpperCase()
     res[char] = i
@@ -20,11 +20,11 @@ const hexLookup = (function () {
     }
   }
   return res
-}())
+})()
 
 const reverseHexLookup = hexLookup.reverse
 
-function bytesToHex (sequence) {
+function bytesToHex(sequence) {
   const buf = Array(sequence.length)
   for (let i = sequence.length - 1; i >= 0; i--) {
     buf[i] = reverseHexLookup[sequence[i]]
@@ -32,7 +32,7 @@ function bytesToHex (sequence) {
   return buf.join('')
 }
 
-function byteForHex (hex) {
+function byteForHex(hex) {
   const byte = hexLookup[hex]
   if (byte === undefined) {
     throw new Error(`\`${hex}\` is not a valid hex representation of a byte`)
@@ -40,7 +40,7 @@ function byteForHex (hex) {
   return byte
 }
 
-function parseBytes (val, Output = <any>Array) {
+function parseBytes(val, Output = <any>Array) {
   if (!val || val.length === undefined) {
     throw new Error(`${val} is not a sequence`)
   }
@@ -67,16 +67,16 @@ function parseBytes (val, Output = <any>Array) {
   return res
 }
 
-function serializeUIntN (val, width) {
+function serializeUIntN(val, width) {
   const newBytes = new Uint8Array(width)
   const lastIx = width - 1
   for (let i = 0; i < width; i++) {
-    newBytes[lastIx - i] = (val >>> (i * 8) & 0xff)
+    newBytes[lastIx - i] = (val >>> (i * 8)) & 0xff
   }
   return newBytes
 }
 
-function compareBytes (a, b) {
+function compareBytes(a, b) {
   assert(a.length === b.length)
   for (let i = 0; i < a.length; i++) {
     const cmp = signum(a[i], b[i])
@@ -87,7 +87,7 @@ function compareBytes (a, b) {
   return 0
 }
 
-function slice (val, startIx = 0, endIx = val.length, Output = val.constructor) {
+function slice(val, startIx = 0, endIx = val.length, Output = val.constructor) {
   /* eslint-disable no-param-reassign */
   if (startIx < 0) {
     startIx += val.length
@@ -104,10 +104,4 @@ function slice (val, startIx = 0, endIx = val.length, Output = val.constructor) 
   return res
 }
 
-export {
-  parseBytes,
-  bytesToHex,
-  slice,
-  compareBytes,
-  serializeUIntN
-}
+export { parseBytes, bytesToHex, slice, compareBytes, serializeUIntN }
