@@ -1,5 +1,12 @@
 # ripple-binary-codec Release History
 
+## 0.3.0 (2020-06-24)
+
+- Migrate BabelJS -> TypeScript
+- Testing Framework Mocha -> Jest
+- Update dependencies 
+- Linting updated using eslint similar to Xpring-JS
+
 ## 0.2.6 (2019-12-31)
 
 - Update dependencies
