@@ -34,12 +34,12 @@ const coreTypes = {
   Vector256,
 }
 
-Object.entries(Field).forEach( ([_,f]) => {
+Object.entries(Field).forEach(([_, f]) => {
   f.associatedType = coreTypes[f.type.name]
 })
 
-Field["TransactionType"].associatedType = Enums.TransactionType
-Field["TransactionResult"].associatedType = Enums.TransactionResult
-Field["LedgerEntryType"].associatedType = Enums.LedgerEntryType
+Field['TransactionType'].associatedType = Enums.TransactionType
+Field['TransactionResult'].associatedType = Enums.TransactionResult
+Field['LedgerEntryType'].associatedType = Enums.LedgerEntryType
 
 export { coreTypes }

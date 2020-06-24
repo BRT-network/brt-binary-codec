@@ -11,7 +11,7 @@ const STArray = makeClass(
         const array = new STArray()
         while (!parser.end()) {
           const field = parser.readField()
-          if (field.name === "ArrayEndMarker") {
+          if (field.name === 'ArrayEndMarker') {
             break
           }
           const outer = new STObject()

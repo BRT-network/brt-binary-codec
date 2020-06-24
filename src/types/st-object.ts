@@ -13,7 +13,7 @@ const STObject = makeClass(
         const so = new this()
         while (!parser.end(end)) {
           const field = parser.readField()
-          if (field.name === "ObjectEndMarker") {
+          if (field.name === 'ObjectEndMarker') {
             break
           }
           so[field.name] = parser.readFieldValue(field)
