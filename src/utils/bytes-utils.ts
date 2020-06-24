@@ -1,12 +1,20 @@
 import { strict as assert } from 'assert'
 
+<<<<<<< HEAD
 function signum(a, b) {
+=======
+function signum (a, b) {
+>>>>>>> master
   return a < b ? -1 : a === b ? 0 : 1
 }
 
 const hexLookup = (function () {
   const res = <any>{}
+<<<<<<< HEAD
   const reverse = (res.reverse = new Array(256))
+=======
+  const reverse = res.reverse = new Array(256)
+>>>>>>> master
   for (let i = 0; i < 16; i++) {
     const char = i.toString(16).toUpperCase()
     res[char] = i
@@ -20,11 +28,19 @@ const hexLookup = (function () {
     }
   }
   return res
+<<<<<<< HEAD
 })()
 
 const reverseHexLookup = hexLookup.reverse
 
 function bytesToHex(sequence) {
+=======
+}())
+
+const reverseHexLookup = hexLookup.reverse
+
+function bytesToHex (sequence) {
+>>>>>>> master
   const buf = Array(sequence.length)
   for (let i = sequence.length - 1; i >= 0; i--) {
     buf[i] = reverseHexLookup[sequence[i]]
@@ -32,7 +48,11 @@ function bytesToHex(sequence) {
   return buf.join('')
 }
 
+<<<<<<< HEAD
 function byteForHex(hex) {
+=======
+function byteForHex (hex) {
+>>>>>>> master
   const byte = hexLookup[hex]
   if (byte === undefined) {
     throw new Error(`\`${hex}\` is not a valid hex representation of a byte`)
@@ -40,7 +60,11 @@ function byteForHex(hex) {
   return byte
 }
 
+<<<<<<< HEAD
 function parseBytes(val, Output = <any>Array) {
+=======
+function parseBytes (val, Output = <any>Array) {
+>>>>>>> master
   if (!val || val.length === undefined) {
     throw new Error(`${val} is not a sequence`)
   }
@@ -67,16 +91,28 @@ function parseBytes(val, Output = <any>Array) {
   return res
 }
 
+<<<<<<< HEAD
 function serializeUIntN(val, width) {
   const newBytes = new Uint8Array(width)
   const lastIx = width - 1
   for (let i = 0; i < width; i++) {
     newBytes[lastIx - i] = (val >>> (i * 8)) & 0xff
+=======
+function serializeUIntN (val, width) {
+  const newBytes = new Uint8Array(width)
+  const lastIx = width - 1
+  for (let i = 0; i < width; i++) {
+    newBytes[lastIx - i] = (val >>> (i * 8) & 0xff)
+>>>>>>> master
   }
   return newBytes
 }
 
+<<<<<<< HEAD
 function compareBytes(a, b) {
+=======
+function compareBytes (a, b) {
+>>>>>>> master
   assert(a.length === b.length)
   for (let i = 0; i < a.length; i++) {
     const cmp = signum(a[i], b[i])
@@ -87,7 +123,11 @@ function compareBytes(a, b) {
   return 0
 }
 
+<<<<<<< HEAD
 function slice(val, startIx = 0, endIx = val.length, Output = val.constructor) {
+=======
+function slice (val, startIx = 0, endIx = val.length, Output = val.constructor) {
+>>>>>>> master
   /* eslint-disable no-param-reassign */
   if (startIx < 0) {
     startIx += val.length
@@ -104,4 +144,14 @@ function slice(val, startIx = 0, endIx = val.length, Output = val.constructor) {
   return res
 }
 
+<<<<<<< HEAD
 export { parseBytes, bytesToHex, slice, compareBytes, serializeUIntN }
+=======
+export {
+  parseBytes,
+  bytesToHex,
+  slice,
+  compareBytes,
+  serializeUIntN
+}
+>>>>>>> master

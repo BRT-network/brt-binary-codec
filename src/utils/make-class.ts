@@ -1,17 +1,33 @@
+<<<<<<< HEAD
 import _ = require('lodash')
 const inherits = require('inherits')
 
 function forEach(obj, func) {
   Object.keys(obj || {}).forEach((k) => {
+=======
+import _ = require('lodash');
+const inherits = require('inherits')
+
+function forEach (obj, func) {
+  Object.keys(obj || {}).forEach(k => {
+>>>>>>> master
     func(obj[k], k)
   })
 }
 
+<<<<<<< HEAD
 function ensureArray(val) {
   return Array.isArray(val) ? val : [val]
 }
 
 export function makeClass(klass_, definition_) {
+=======
+function ensureArray (val) {
+  return Array.isArray(val) ? val : [val]
+}
+
+export function makeClass (klass_, definition_) {
+>>>>>>> master
   const definition = definition_ || klass_
   let klass = typeof klass_ === 'function' ? klass_ : null
   if (klass === null) {
@@ -36,10 +52,17 @@ export function makeClass(klass_, definition_) {
     klass = function () {}
   }
   const proto = klass.prototype
+<<<<<<< HEAD
   function addFunc(original, name, wrapper) {
     proto[name] = wrapper || original
   }
   ;(definition.getters || []).forEach((k) => {
+=======
+  function addFunc (original, name, wrapper) {
+    proto[name] = wrapper || original
+  }
+  (definition.getters || []).forEach(k => {
+>>>>>>> master
     const key = '_' + k
     proto[k] = function () {
       return this[key]
@@ -73,13 +96,23 @@ export function makeClass(klass_, definition_) {
   if (definition.mixins) {
     const mixins = {}
     // Right-most in the list win
+<<<<<<< HEAD
     ensureArray(definition.mixins)
       .reverse()
       .forEach((o) => {
         _.defaults(mixins, o)
       })
+=======
+    ensureArray(definition.mixins).reverse().forEach(o => {
+      _.defaults(mixins, o)
+    })
+>>>>>>> master
     _.defaults(proto, mixins)
   }
 
   return klass
+<<<<<<< HEAD
 }
+=======
+};
+>>>>>>> master

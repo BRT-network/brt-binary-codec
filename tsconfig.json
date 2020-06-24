@@ -10,7 +10,10 @@
         "moduleResolution": "node",
         "noUnusedLocals": true,
         "noUnusedParameters": true,
+<<<<<<< HEAD
         "resolveJsonModule": true,
+=======
+>>>>>>> master
         "noImplicitThis": false,
         "noImplicitAny": false,
         "removeComments": false,

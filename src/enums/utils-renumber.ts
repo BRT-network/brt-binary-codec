@@ -95,7 +95,7 @@ const input = {
   tecDUPLICATE: 149,
   tecKILLED: 150,
   tecHAS_OBLIGATIONS: 151,
-  tecTOO_SOON: 152,
+  tecTOO_SOON: 152
 }
 
 let startingFromTemBADSENDXRPPATHS = -284
@@ -111,7 +111,7 @@ let startingFromTecCLAIM = 100
 const startingFromTecDIRFULL = 121
 
 let previousKey = 'tem'
-Object.keys(input).forEach((key) => {
+Object.keys(input).forEach(key => {
   if (key.substring(0, 3) !== previousKey.substring(0, 3)) {
     console.log()
     previousKey = key
