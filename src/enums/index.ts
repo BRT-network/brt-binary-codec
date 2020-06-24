@@ -1,125 +1,148 @@
-import { makeClass } from './../utils/make-class'
-const assert = require('assert')
-const _ = require('lodash')
-const { parseBytes, serializeUIntN } = require('./../utils/bytes-utils')
+const { serializeUIntN } = require('./../utils/bytes-utils')
 const enums = require('./definitions.json')
 
-function transformWith (func, obj) {
-  return _.transform(obj, func)
-}
+const TYPE_WIDTH = 2
+const LEDGER_ENTRY_WIDTH = 2
+const TXN_TYPE_WIDTH = 2
+const TXN_RESULT_WIDTH = 1
 
-function biMap (obj, valueKey) {
-  return _.transform(obj, (result, value, key) => {
-    result[key] = value
-    result[value[valueKey]] = value
-  })
-}
+class EnumType {
+  bytes : Uint8Array
 
-const EnumType = makeClass({
-  EnumType (definition) {
-    _.assign(this, definition)
-    // At minimum
-    assert(this.bytes instanceof Uint8Array)
-    assert(typeof this.ordinal === 'number')
-    assert(typeof this.name === 'string')
-  },
-  toString () {
+  constructor (public name : string,
+               public ordinal : number, 
+               public ordinalWidth : number
+  ) {
+    this.bytes = serializeUIntN(ordinal, ordinalWidth)
+  }
+
+  toJSON () : string {
     return this.name
-  },
-  toJSON () {
-    return this.name
-  },
-  toBytesSink (sink) {
+  }
+
+  toBytesSink (sink) : void {
     sink.put(this.bytes)
-  },
-  statics: {
-    ordinalByteWidth: 1,
-    fromParser (parser) {
-      return this.from(parser.readUIntN(this.ordinalByteWidth))
-    },
-    from (val) {
-      const ret = val instanceof this ? val : this[val]
-      if (!ret) {
-        throw new Error(
-          `${val} is not a valid name or ordinal for ${this.enumName}`)
+  }
+}
+
+class EnumTypes {
+  constructor (types : { [key : string] : number},
+               public ordinalWidth : number
+  ) {
+    Object.entries(types).forEach( ([k,v]) => {
+      this[k] = new EnumType(k, v, ordinalWidth)
+      this[v.toString()] = this[k]
+    })
+  }
+
+  from (value : EnumType | string) : EnumType {
+    return value instanceof EnumType ? value : this[value]
+  }
+
+  fromParser (parser) : EnumType {
+    return this.from(parser.readUIntN(this.ordinalWidth).toString())
+  }
+}
+
+type FieldInfo = {
+  nth : number,
+  isVLEncoded : boolean,
+  isSerialized : boolean,
+  isSigningField : boolean,
+  type : string
+}
+
+class Field {
+  nth : number
+  isVLEncoded : boolean
+  isSerialized : boolean
+  isSigningField : boolean
+  type : EnumType
+  ordinal : number
+  name : string 
+  bytes : Uint8Array
+  associatedType : any 
+
+  constructor ([name, info] : [string, FieldInfo]) {
+    this.name = name
+    this.nth = info.nth
+    this.isVLEncoded = info.isVLEncoded
+    this.isSerialized = info.isSerialized
+    this.isSigningField = info.isSigningField
+    const typeOrdinal = enums.TYPES[info.type]
+    this.ordinal = typeOrdinal << 16 | info.nth
+    this.type = new EnumType(info.type, typeOrdinal, TYPE_WIDTH)
+    this.bytes = this.header(typeOrdinal, info.nth)
+    this.associatedType = undefined // For later assignment in ./types/index.js
+  }
+
+  header (type : number, nth : number) : Uint8Array {
+    let header : Array<number> = []
+    if (type < 16) {
+      if (nth < 16) {
+        header.push(type << 4 | nth)
       }
-      return ret
-    },
-    valuesByName () {
-      return _.transform(this.initVals, (result, ordinal, name) => {
-        const bytes = serializeUIntN(ordinal, this.ordinalByteWidth)
-        const type = new this({ name, ordinal, bytes })
-        result[name] = type
-      })
-    },
-    init () {
-      const mapped = this.valuesByName()
-      _.assign(this, biMap(mapped, 'ordinal'))
-      this.values = _.values(mapped)
-      return this
+      else {
+        header.push(type << 4, nth)
+      }
     }
+    else if (nth < 16) {
+      header.push(nth, type)
+    }
+    else {
+      header.push(0,type, nth)
+    }
+    return new Uint8Array(header)
   }
-}, undefined)
 
-function makeEnum (name, definition) {
-  return makeClass({
-    inherits: EnumType,
-    statics: _.assign(definition, { enumName: name })
-  }, undefined)
+  toJSON () : string {
+    return this.name
+  }
 }
 
-function makeEnums (to, definition, name) {
-  to[name] = makeEnum(name, definition)
+class Fields {
+  constructor (fields : Array<[ string, FieldInfo]>) {
+    fields.forEach( ([k, v]) => {
+      this[k] = new Field([k, v])
+      this[this[k].ordinal.toString()] = this[k]
+    })
+  }
+
+  from (value : Field | string) : Field {
+    return value instanceof Field ? value : this[value]
+  }
 }
 
-const Enums = transformWith(makeEnums, {
-  Type: {
-    initVals: enums.TYPES
-  },
-  LedgerEntryType: {
-    initVals: enums.LEDGER_ENTRY_TYPES, ordinalByteWidth: 2
-  },
-  TransactionType: {
-    initVals: enums.TRANSACTION_TYPES, ordinalByteWidth: 2
-  },
-  TransactionResult: {
-    initVals: enums.TRANSACTION_RESULTS, ordinalByteWidth: 1
+interface EnumInterface {
+  TYPES : { [key: string] : number}
+  FIELDS : Array<[ string, FieldInfo ]>
+  LEDGER_ENTRY_TYPES : { [key: string] : number}
+  TRANSACTION_TYPES : { [key: string] : number}
+  TRANSACTION_RESULTS : { [key: string] : number}
+}
+
+class Enum {
+  Type : EnumTypes
+  Field : Fields
+  LedgerEntryType : EnumTypes
+  TransactionType : EnumTypes
+  TransactionResult : EnumTypes
+
+  constructor (initVals : EnumInterface) {
+    this.Type = new EnumTypes(initVals.TYPES, TYPE_WIDTH)
+    this.LedgerEntryType = new EnumTypes(initVals.LEDGER_ENTRY_TYPES, LEDGER_ENTRY_WIDTH)
+    this.TransactionType = new EnumTypes(initVals.TRANSACTION_TYPES, TXN_TYPE_WIDTH)
+    this.TransactionResult = new EnumTypes(initVals.TRANSACTION_RESULTS, TXN_RESULT_WIDTH)
+    this.Field = new Fields(initVals.FIELDS)
   }
+}
+
+const Enums = new Enum ({
+  TYPES : enums.TYPES,
+  FIELDS : enums.FIELDS,
+  LEDGER_ENTRY_TYPES : enums.LEDGER_ENTRY_TYPES,
+  TRANSACTION_TYPES : enums.TRANSACTION_TYPES,
+  TRANSACTION_RESULTS : enums.TRANSACTION_RESULTS
 })
-
-Enums.Field = makeClass({
-  inherits: EnumType,
-  statics: {
-    enumName: 'Field',
-    initVals: enums.FIELDS,
-    valuesByName () {
-      const fields = _.map(this.initVals, ([name, definition]) => {
-        const type = Enums.Type[definition.type]
-        const bytes = this.header(type.ordinal, definition.nth)
-        const ordinal = type.ordinal << 16 | definition.nth
-        const extra = { ordinal, name, type, bytes }
-        return new this(_.assign(definition, extra))
-      })
-      return _.keyBy(fields, 'name')
-    },
-    header (type, nth) {
-      const name = nth
-      const header = <any>[]
-      const push = header.push.bind(header)
-      if (type < 16) {
-        if (name < 16) {
-          push(type << 4 | name)
-        } else {
-          push(type << 4, name)
-        }
-      } else if (name < 16) {
-        push(name, type)
-      } else {
-        push(0, type, name)
-      }
-      return parseBytes(header, Uint8Array)
-    }
-  }
-}, undefined)
 
 export { Enums }

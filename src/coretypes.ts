@@ -1,5 +1,4 @@
 import { Enums } from './enums';
-const {Field} = Enums.Field;
 const types = require('./types');
 const binary = require('./binary');
 const {ShaMap} = require('./shamap');
@@ -15,7 +14,6 @@ export {
   ledgerHashes,
   Enums,
   quality,
-  Field,
   HashPrefix,
   ShaMap,
   types

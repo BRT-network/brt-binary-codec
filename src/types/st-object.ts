@@ -2,7 +2,6 @@ import { makeClass } from '../utils/make-class'
 import { Enums } from '../enums'
 const _ = require('lodash')
 const { BinarySerializer } = require('../serdes/binary-serializer')
-const { ObjectEndMarker } = Enums.Field
 const { SerializedType } = require('./serialized-type')
 
 const STObject = makeClass({
@@ -13,7 +12,7 @@ const STObject = makeClass({
       const so = new this()
       while (!parser.end(end)) {
         const field = parser.readField()
-        if (field === ObjectEndMarker) {
+        if (field.name === "ObjectEndMarker") {
           break
         }
         so[field] = parser.readFieldValue(field)

@@ -1,7 +1,6 @@
 /**
  * Quick script to re-number values
  */
-
 const input = {
   temBAD_SEND_XRP_PATHS: -283,
   temBAD_SEQUENCE: -282,

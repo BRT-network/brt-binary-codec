@@ -66,7 +66,7 @@ const BinaryParser = makeClass({
     return type << 16 | nth
   },
   readField () {
-    return Enums.Field.from(this.readFieldOrdinal())
+    return Enums.Field.from(this.readFieldOrdinal().toString())
   },
   readType (type) {
     return type.fromParser(this)
